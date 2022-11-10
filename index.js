@@ -27,6 +27,7 @@ async function run() {
         const serviceCollection = client.db('cutePhoto').collection('services');
         const reviewCollection = client.db('cutePhoto').collection('reviews')
 
+        //Get limited service from database and send to client site
         app.get('/services', async (req, res) => {
             const limitQuery = parseInt(req.query.limit);
             const sort = { date: -1 }
@@ -44,6 +45,7 @@ async function run() {
 
         });
 
+        //Get all service from database and send to client site
         app.get('/service', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
@@ -59,7 +61,15 @@ async function run() {
             res.send(service)
         });
 
+        //post service from database 
+        app.post('/service', async (req, res) => {
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service);
+            res.send(result);
+        });
+
         //review api 
+        //Get review data from database and send to client site
         app.get('/reviews', async (req, res) => {
             // console.log(req.query.email)
             let query = {};
@@ -73,13 +83,15 @@ async function run() {
             res.send(reviews);
         });
 
+
+        //post review from database 
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
         });
 
-
+        // update review to database 
         app.patch('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const status = req.body.status;
@@ -93,7 +105,7 @@ async function run() {
             res.send(result);
         })
 
-
+        //Delete review service from database
         app.delete('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -113,6 +125,7 @@ app.get('/', (req, res) => {
     res.send('Cute Photography API running');
 });
 
+//server running this port
 app.listen(port, () => {
     console.log('Cute Photography server is running on port', port);
 })

@@ -84,7 +84,7 @@ async function run() {
         });
 
 
-        //post review from database 
+        //Update review from database 
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
@@ -92,18 +92,30 @@ async function run() {
         });
 
         // update review to database 
-        app.patch('/reviews/:id', async (req, res) => {
+        app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
-            const status = req.body.status;
             const query = { _id: ObjectId(id) };
-            const updated = {
-                $set: {
-                    status: status
-                }
-            }
-            const result = await reviewCollection.updateOne(query, updated);
+            const result = await reviewCollection.findOne(query);
             res.send(result);
         })
+
+        //update review to database
+
+        app.put('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const user = req.body;
+            const option = { upsert: true };
+            const updatedUser = {
+                $set: {
+                    name: user.name,
+                    email: user.email
+                }
+            }
+            const result = await reviewCollection.updateOne(filter, updatedUser, option);
+            res.send(result);
+        })
+
 
         //Delete review service from database
         app.delete('/reviews/:id', async (req, res) => {

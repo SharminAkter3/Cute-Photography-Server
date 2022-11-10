@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
@@ -27,11 +28,29 @@ async function run() {
         const reviewCollection = client.db('cutePhoto').collection('reviews')
 
         app.get('/services', async (req, res) => {
+            const limitQuery = parseInt(req.query.limit);
+            const sort = { date: -1 }
+
+            if (limitQuery) {
+                const cursor = serviceCollection.find({}).sort(sort).limit(limitQuery);
+                const result = await cursor.toArray();
+                res.send(result);
+            }
+            else {
+                const cursor = serviceCollection.find({}).sort(sort);
+                const result = await cursor.toArray();
+                res.send(result);
+            }
+
+        });
+
+        app.get('/service', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
         });
+
 
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;

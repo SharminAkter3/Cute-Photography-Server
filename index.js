@@ -181,7 +181,7 @@ run().catch(error => console.error(error));
 
 
 app.get('/', (req, res) => {
-    res.send('Cute Photography API running');
+    res.send('Cute Photography API is running');
 });
 
 //server running this port
